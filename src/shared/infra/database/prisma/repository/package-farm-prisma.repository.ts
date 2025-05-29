@@ -7,11 +7,14 @@ export class PackageFarmPrismaRepository implements FarmRepository {
   constructor(private readonly prismaService: PrismaClient) {}
 
   async create(entity: Farm): Promise<void> {
+    console.log("FARM RAW =>>>>>>>>", entity)
     const raw = FarmPrismaMapper.toPrisma(entity);
 
     const rawFarm = await this.prismaService.farm.create({
       data: raw,
     });
+
+    console.log("FARM RAW =>>>>>>>>", rawFarm)
 
     FarmPrismaMapper.toDomain(rawFarm);
   }

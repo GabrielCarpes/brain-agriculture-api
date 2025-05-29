@@ -1,18 +1,18 @@
-FROM node:18-alpine
+FROM node:lts-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
 COPY yarn.lock ./
 
-# Install yarn
+
 RUN npm install --global yarn --force
 RUN yarn cache clean
 
 COPY . .
 
-RUN yarn build
-
 RUN yarn generate
 
-CMD ["yarn", "start"]
+EXPOSE 3333
+
+CMD ["sh", "-c", "npx prisma migrate deploy && yarn start"]

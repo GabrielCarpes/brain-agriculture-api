@@ -28,6 +28,7 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/brain_agriculture_db
       NODE_ENV: development
+      API_PREFIX: v1
     depends_on:
       - postgres
     networks:

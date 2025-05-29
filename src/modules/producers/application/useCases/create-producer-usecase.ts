@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ProducerRepository } from '../domain/repositories/producer.repository';
-import { IProducer } from '../interfaces/producer.interface';
+import { IProducer } from '../domain/interfaces/producer.interface';
 import { Producer } from '../domain/entities/producer';
 
 @Injectable()

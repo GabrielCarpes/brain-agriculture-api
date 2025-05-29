@@ -16,11 +16,12 @@ export class ProducerPrismaMapper {
   }
 
   static toDomain(raw: RawProducerWithRelations): Producer {
+    console.log(raw)
     return new Producer({
       id: raw.id,
       name: raw.name,
       document: raw.document,
-      farms: raw.farms?.map(FarmPrismaMapper.toDomain) ?? [],
+      farms: raw.farms?.length ? raw.farms?.map(FarmPrismaMapper.toDomain) : [],
     });
   }
 }

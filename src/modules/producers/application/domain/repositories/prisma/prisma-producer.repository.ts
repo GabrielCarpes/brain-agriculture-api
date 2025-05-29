@@ -1,9 +1,9 @@
+import { PackageProducerPrismaRepository } from '@infra/database/prisma/repository/package-producer-prisma.repository';
 import { Injectable } from '@nestjs/common';
-import { PackageFarmPrismaRepository } from '@infra/database/prisma/repository/package-farm-prisma.repository';
 import { PrismaService } from '@shared/database/prisma/prisma.service';
 
 @Injectable()
-export class PrismaProducerRepository extends PackageFarmPrismaRepository {
+export class PrismaProducerRepository extends PackageProducerPrismaRepository {
   constructor(prismaService: PrismaService) {
     super(prismaService);
   }

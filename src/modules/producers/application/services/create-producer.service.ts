@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProducerUnexpectedError } from '../errors/create-producer-unexpected-error';
-import { IProducer } from '../interfaces/producer.interface';
+import { IProducer } from '../domain/interfaces/producer.interface';
 import { CreateProducerUseCase } from '../useCases/create-producer-usecase';
 import { InvalidDocumentFormatError } from '../errors/invalid-document-format-error';
 import { isValidCPFOrCNPJ } from '@shared/validators/document-validator';
@@ -29,10 +29,12 @@ export class CreateProducerService {
     if (!isValidCPFOrCNPJ(document)) {
       throw new InvalidDocumentFormatError();
     }
+    console.log("EARRROoOoOOOOOOOOOOO ===============>")
 
     try {
       await this.createProducerUseCase.execute({ name, document });
     } catch (error) {
+      console.log("EARRROoOoOOOOOOOOOOO ===============>", error)
       throw new CreateProducerUnexpectedError();
     }
   }

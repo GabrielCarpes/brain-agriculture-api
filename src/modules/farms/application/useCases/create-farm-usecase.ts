@@ -2,7 +2,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { CreateFarmUnexpectedError } from '../errors/create-farm-unexpected-error';
-import { IFarm } from '../interfaces/farm.interface';
+import { IFarm } from '../domain/interfaces/farm.interface';
 import { Farm } from '@modules/farms/application/domain/entities/farm';
 import { FarmRepository } from '@modules/farms/application/domain/repositories/farm.repository';
 
