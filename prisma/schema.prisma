@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+  //output   = "../lib/prisma"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Producer {
+  id       String @id @default(uuid())
+  document String @unique
+  name     String
+  farms    Farm[]
+
+  @@map("producers")
+}
+
+model Farm {
+  id             String   @id @default(uuid())
+  name           String
+  city           String
+  state          String
+  totalArea      Float
+  arableArea     Float
+  vegetationArea Float
+  producerId     String
+  producer       Producer @relation(fields: [producerId], references: [id])
+  crops          Crop[]
+
+  @@map("farms")
+}
+
+model Crop {
+  id      String @id @default(uuid())
+  culture String
+  harvest String
+  farmId  String
+  farm    Farm   @relation(fields: [farmId], references: [id])
+
+  @@map("crops")
+}
