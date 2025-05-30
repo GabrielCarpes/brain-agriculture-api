@@ -1,6 +1,6 @@
 import { Replace } from "@helpers/replace";
 import { uuid } from "@helpers/uuid";
-import { Crop } from "@modules/crops/application/domain/entities/crops";
+import { Crop } from "@modules/crops/domain/entities/crops";
 
 export interface FarmProps {
   id: string;
@@ -40,7 +40,7 @@ export class Farm {
   }
 
   public get id(): string {
-    return this.id;
+    return this.props.id;
   }
 
   public get name(): string {

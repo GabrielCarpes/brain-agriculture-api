@@ -1,9 +1,17 @@
 import { FarmPrismaMapper } from '@modules/farms/infra/database/prisma/mappers/farm-prisma.mapper';
-import { Producer } from '@modules/producers/application/domain/entities/producer';
-import type { Producer as RawProducer, Farm as RawFarm } from '@prisma/client';
+import { CropPrismaMapper } from '@modules/crops/infra/database/prisma/mappers/crop-prisma.mapper';
+
+import { Producer } from '@modules/producers/domain/entities/producer';
+import type {
+  Producer as RawProducer,
+  Farm as RawFarm,
+  Crop as RawCrop,
+} from '@prisma/client';
 
 export type RawProducerWithRelations = RawProducer & {
-  farms?: RawFarm[];
+  farms?: (RawFarm & {
+    crops?: RawCrop[];
+  })[];
 };
 
 export class ProducerPrismaMapper {
@@ -16,12 +24,16 @@ export class ProducerPrismaMapper {
   }
 
   static toDomain(raw: RawProducerWithRelations): Producer {
-    console.log(raw)
+    const farms = raw.farms?.map((farm) => {
+      const crops = farm.crops?.map(CropPrismaMapper.toDomain) || [];
+      return FarmPrismaMapper.toDomain({ ...farm, crops });
+    }) || [];
+
     return new Producer({
       id: raw.id,
       name: raw.name,
       document: raw.document,
-      farms: raw.farms?.length ? raw.farms?.map(FarmPrismaMapper.toDomain) : [],
+      farms,
     });
   }
 }

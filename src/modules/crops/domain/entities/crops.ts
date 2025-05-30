@@ -32,7 +32,7 @@ export class Crop {
   }
 
   public get id(): string {
-    return this.id;
+    return this.props.id;
   }
 
   public get culture(): string {

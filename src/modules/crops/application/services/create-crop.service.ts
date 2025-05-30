@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateCropUnexpectedError } from '../errors/create-crop-unexpected-error';
 import { MissingCultureOrHarvestError } from '../errors/missing-culture-or-harvest-error';
 import { CreateCropUseCase } from '../useCases/create-crop-usecase';
-import { ICrop } from '../domain/interfaces/crop.interface';
-import { Crop } from '../domain/entities/crops';
+import { ICrop } from '../../domain/interfaces/crop.interface';
+import { Crop } from '../../domain/entities/crops';
 
 @Injectable()
 export class CreateCropService {

@@ -2,7 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { name } from '../../../../../package.json';
 
-const message = 'Erro inesperado ao criar fazenda';
+const message = 'Unexpected error while creating farm';
 const error = `${name}/create_farm_unexpected_error`;
 
 export class CreateFarmUnexpectedError extends InternalServerErrorException {

@@ -1,6 +1,6 @@
 import { Replace } from "@helpers/replace";
 import { uuid } from "@helpers/uuid";
-import { Farm } from "@modules/farms/application/domain/entities/farm";
+import { Farm } from "@modules/farms/domain/entities/farm";
 
 export interface ProducerProps {
   id: string;

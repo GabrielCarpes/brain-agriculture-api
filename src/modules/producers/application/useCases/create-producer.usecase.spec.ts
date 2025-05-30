@@ -1,81 +1,67 @@
-// import { TransactionRepository } from '../domain/repositories/transaction.repository';
-// import { CreateTransactionUseCase } from './create-transactio-usecase';
-// import { Transaction } from '../../infra/typeorm/entities/transaction';
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { CreateTransactionUnexpectedError } from '../errors/create-transaction-unexpected-error';
-// import { transactionMock } from './../../../../../test/factories/transaction.factory';
-// import { CreateTransactionRequest } from '../interfaces/transaction.interface';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CreateProducerUseCase } from './create-producer-usecase';
+import { ProducerRepository } from '../../domain/repositories/producer.repository';
+import { Producer } from '../../domain/entities/producer';
+import { CreateProducerUnexpectedError } from '../errors/create-producer-unexpected-error';
+import { producerMock } from '../../../../../test/factories/producer.mock';
 
-// const transactionMocked = transactionMock({});
+const mockProducer = producerMock({})
 
-// let transactionRepository: TransactionRepository;
-// let createTransactionUseCase: CreateTransactionUseCase;
+describe('CreateProducerUseCase', () => {
+  let createProducerUseCase: CreateProducerUseCase;
+  let spyProducerRepositoryCreate: jest.SpyInstance<
+    Promise<void>,
+    [producer: Producer]
+  >;
 
-// let spyTransactionRespositoryCreate: jest.SpyInstance<
-//   Promise<void>,
-//   [Transaction: Transaction]
-// >;
+  beforeEach(async () => {
+    const producerRepositoryMock = {
+      provide: ProducerRepository,
+      useValue: {
+        create: jest.fn().mockResolvedValue(mockProducer),
+      },
+    };
 
-// describe('CreateTransactionUseCase', () => {
-//   beforeEach(async () => {
-//     const transactionRepositoryMocked = {
-//       provide: TransactionRepository,
-//       useValue: {
-//         create: jest.fn(() => transactionMocked),
-//       },
-//     };
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [CreateProducerUseCase, producerRepositoryMock],
+    }).compile();
 
-//     const module: TestingModule = await Test.createTestingModule({
-//       imports: [],
-//       controllers: [],
-//       providers: [transactionRepositoryMocked],
-//     }).compile();
+    createProducerUseCase = module.get<CreateProducerUseCase>(CreateProducerUseCase);
 
-//     transactionRepository = module.get<TransactionRepository>(
-//       TransactionRepository,
-//     );
+    const repository = module.get<ProducerRepository>(ProducerRepository);
+    spyProducerRepositoryCreate = jest.spyOn(repository, 'create');
+  });
 
-//     createTransactionUseCase = new CreateTransactionUseCase(
-//       transactionRepository,
-//     );
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-//     spyTransactionRespositoryCreate = jest.spyOn(
-//       transactionRepository,
-//       'create',
-//     );
-//   });
+  it('should create a producer successfully', async () => {
+    const props = {
+      name: 'John Doe',
+      document: '12345678901',
+    };
 
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+    await expect(createProducerUseCase.execute(props)).resolves.toBeUndefined();
 
-//   it('should create a transaction successfully', async () => {
-//     const payload: CreateTransactionRequest = {
-//       amount: 150.75,
-//       timestamp: new Date().toISOString(),
-//     };
+    expect(spyProducerRepositoryCreate).toHaveBeenCalledTimes(1);
+    expect(spyProducerRepositoryCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ name: props.name, document: props.document })
+    );
+  });
 
-//     await createTransactionUseCase.execute(payload);
+  it('should throw CreateProducerUnexpectedError if repository throws an error', async () => {
+    spyProducerRepositoryCreate.mockImplementationOnce(() => {
+      throw new Error('Unexpected DB error');
+    });
 
-//     expect(spyTransactionRespositoryCreate).toHaveBeenCalledTimes(1);
-//     expect(spyTransactionRespositoryCreate).toHaveBeenCalledWith(
-//       expect.any(Transaction),
-//     );
-//   });
+    const props = {
+      name: 'Jane Doe',
+      document: '98765432100',
+    };
 
-//   it('should throw CreateTransactionUnexpectedError if repository.create fails', async () => {
-//     spyTransactionRespositoryCreate.mockImplementationOnce(() => {
-//       throw new CreateTransactionUnexpectedError();
-//     });
-
-//     const payload: CreateTransactionRequest = {
-//       amount: 100.0,
-//       timestamp: new Date().toISOString(),
-//     };
-
-//     await expect(createTransactionUseCase.execute(payload)).rejects.toThrow(
-//       CreateTransactionUnexpectedError,
-//     );
-//     expect(spyTransactionRespositoryCreate).toHaveBeenCalledTimes(1);
-//   });
-// });
+    await expect(createProducerUseCase.execute(props)).rejects.toThrow(
+      CreateProducerUnexpectedError,
+    );
+  });
+});

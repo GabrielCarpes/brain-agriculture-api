@@ -4,8 +4,8 @@ import { CreateCropUseCase } from './application/useCases/create-crop-usecase';
 import { ConfigModule } from '@nestjs/config';
 import { CropController } from './infra/http/controllers/crop.controller';
 import { DatabaseModule } from '@shared/database/database.module';
-import { CropRepository } from './application/domain/repositories/crop.repository';
-import { PrismaCropRepository } from './application/domain/repositories/prisma/prisma-crop.repository';
+import { CropRepository } from './domain/repositories/crop.repository';
+import { PrismaCropRepository } from './domain/repositories/prisma/prisma-crop.repository';
 import { CreateCropService } from './application/services/create-crop.service';
 
 @Module({

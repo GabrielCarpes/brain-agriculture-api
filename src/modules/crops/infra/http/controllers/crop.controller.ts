@@ -1,31 +1,47 @@
-import { CreateCropUnexpectedError } from '@modules/crops/application/errors/create-crop-unexpected-error';
-import { CreateCropService } from '@modules/crops/application/services/create-crop.service';
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+} from '@nestjs/swagger';
+
+import { CreateCropService } from '@modules/crops/application/services/create-crop.service';
 import { CreateCropDTO } from '../dtos/create-crop.dto';
+import { CreateCropUnexpectedError } from '@modules/crops/application/errors/create-crop-unexpected-error';
 
 @ApiTags('Culturas')
 @ApiBearerAuth()
-@Controller('v1/crops')
+@Controller('crops')
 export class CropController {
   constructor(private readonly createCropService: CreateCropService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Cadastrar uma nova cultura' })
-  @ApiResponse({ status: 201, description: 'Cultura criada com sucesso' })
-  @ApiResponse({
-    status: 400,
-    description: 'Dados inválidos',
+  @ApiOperation({
+    summary: 'Cadastrar uma nova cultura',
+    description: 'Cria uma cultura agrícola associada a uma fazenda previamente cadastrada. Todos os campos são obrigatórios.',
+  })
+  @ApiBody({
+    type: CreateCropDTO,
+    description: 'Dados da cultura a ser cadastrada.',
+    required: true,
   })
   @ApiResponse({
-    status: 500,
-    description: 'Erro inesperado ao criar cultura',
+    status: HttpStatus.CREATED,
+    description: 'Cultura criada com sucesso.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Dados inválidos. Verifique os campos obrigatórios e formatos.',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Erro inesperado ao criar cultura.',
     type: CreateCropUnexpectedError,
   })
-  async create(
-    @Body() { culture, harvest, farmId }: CreateCropDTO,
-  ): Promise<void> {
-    return this.createCropService.execute({ culture, harvest, farmId });
+  async create(@Body() cropData: CreateCropDTO): Promise<void> {
+    await this.createCropService.execute(cropData);
   }
 }

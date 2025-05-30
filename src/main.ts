@@ -23,9 +23,10 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new LoggerInterceptor());
+  
   app.enableCors();
   app.setGlobalPrefix(env.API_PREFIX || 'v1');
 
-  await app.listen(env.API_PORT || 3000);
+  await app.listen(3333, '0.0.0.0');
 }
 bootstrap();

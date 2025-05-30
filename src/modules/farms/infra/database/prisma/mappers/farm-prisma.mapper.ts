@@ -1,5 +1,5 @@
 import { CropPrismaMapper } from '@modules/crops/infra/database/prisma/mappers/crop-prisma.mapper';
-import { Farm } from '@modules/farms/application/domain/entities/farm';
+import { Farm } from '@modules/farms/domain/entities/farm';
 import type {
   Farm as RawFarm,
   Crop as RawCrop,

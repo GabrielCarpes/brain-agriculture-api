@@ -1,5 +1,5 @@
-import { Crop } from "@modules/crops/application/domain/entities/crops";
-import { CropRepository } from "@modules/crops/application/domain/repositories/crop.repository";
+import { Crop } from "@modules/crops/domain/entities/crops";
+import { CropRepository } from "@modules/crops/domain/repositories/crop.repository";
 import { CropPrismaMapper } from "@modules/crops/infra/database/prisma/mappers/crop-prisma.mapper";
 import { PrismaClient } from "@prisma/client";
 

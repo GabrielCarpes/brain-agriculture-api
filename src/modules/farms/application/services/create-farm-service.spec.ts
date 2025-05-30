@@ -1,100 +1,86 @@
-// import { Test, TestingModule } from "@nestjs/testing";
-// import { CreateTransactionService } from "./create-transaction.service";
-// import { CreateTransactionUseCase } from "../useCases/create-transactio-usecase";
-// import { CreateTransactionUnexpectedError } from "../errors/create-transaction-unexpected-error";
-// import { transactionMock } from "./../../../../../test/factories/transaction.factory";
-// import { CreateTransactionRequest } from "../interfaces/transaction.interface";
-// import { InvalidFormatTimestampTransactionError } from "../errors/invalid-timestamp-format-error";
-// import { InvalidTimestampTransactionError } from "../errors/invalid-timestamp-error";
+import { Test, TestingModule } from '@nestjs/testing';
+import { CreateFarmService } from './create-farm.service';
+import { CreateFarmUseCase } from '../useCases/create-farm-usecase';
+import { InvalidFarmAreaSumError } from '../errors/invalid-farm-area-sum-error';
+import { CreateFarmUnexpectedError } from '../errors/create-farm-unexpected-error';
+import { IFarm } from '../../domain/interfaces/farm.interface';
 
-// const transactionMocked = transactionMock({});
+let createFarmService: CreateFarmService;
 
-// let createTransactionService: CreateTransactionService;
+let spyCreateFarmUseCaseExecute: jest.SpyInstance<Promise<void>, [payload: IFarm]>;
 
-// let spyCreateTransactionUseCaseExecute: jest.SpyInstance<
-//   Promise<void>,
-//   [payload: CreateTransactionRequest]
-// >;
+describe('CreateFarmService', () => {
+  beforeEach(async () => {
+    const createFarmUseCaseMock = {
+      provide: CreateFarmUseCase,
+      useValue: {
+        execute: jest.fn(() => Promise.resolve()),
+      },
+    };
 
-// describe('CreateTransactionService', () => {
-//   beforeEach(async () => {
-//     const createTransactionUseCaseMocked = {
-//       provide: CreateTransactionUseCase,
-//       useValue: {
-//         execute: jest.fn(() => transactionMocked),
-//       },
-//     };
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [CreateFarmService, createFarmUseCaseMock],
+    }).compile();
 
-//     const module: TestingModule = await Test.createTestingModule({
-//       imports: [],
-//       controllers: [],
-//       providers: [
-//         createTransactionUseCaseMocked
-//       ],
-//     }).compile();
+    const createFarmUseCase = module.get<CreateFarmUseCase>(CreateFarmUseCase);
 
-//     const createTransactionUseCase =
-//       module.get<CreateTransactionUseCase>(CreateTransactionUseCase);
+    createFarmService = new CreateFarmService(createFarmUseCase);
 
-//     createTransactionService = new CreateTransactionService(
-//       createTransactionUseCase
-//     );
+    spyCreateFarmUseCaseExecute = jest.spyOn(createFarmUseCase, 'execute');
+  });
 
-//     spyCreateTransactionUseCaseExecute = jest.spyOn(createTransactionUseCase, 'execute');
-//   });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+  it('should create a farm successfully', async () => {
+    const props: IFarm = {
+      name: 'Fazenda Teste',
+      city: 'Cidade Exemplo',
+      state: 'EX',
+      totalArea: 100,
+      arableArea: 60,
+      vegetationArea: 40,
+      producerId: '123e4567-e89b-12d3-a456-426614174000',
+    };
 
-//   it("should create a transaction successfully", async () => {
-//     const props: CreateTransactionRequest = {
-//       amount: 120.00,
-//       timestamp: "2024-02-20T12:34:56.789Z"
-//     };
+    await expect(createFarmService.execute(props)).resolves.toBeUndefined();
 
-//     await expect(createTransactionService.execute(props)).resolves.toBeUndefined();
+    expect(spyCreateFarmUseCaseExecute).toHaveBeenCalledTimes(1);
+    expect(spyCreateFarmUseCaseExecute).toHaveBeenCalledWith(props);
+  });
 
-//     expect(spyCreateTransactionUseCaseExecute).toHaveBeenCalledTimes(1);
-//     expect(spyCreateTransactionUseCaseExecute).toHaveBeenCalledWith(props);
-//   });
+  it('should throw InvalidFarmAreaSumError if arableArea + vegetationArea > totalArea', async () => {
+    const props: IFarm = {
+      name: 'Fazenda Inválida',
+      city: 'Cidade Erro',
+      state: 'ER',
+      totalArea: 100,
+      arableArea: 70,
+      vegetationArea: 50, // 70 + 50 > 100
+      producerId: '123e4567-e89b-12d3-a456-426614174000',
+    };
 
-//   it("should throw CreateTransactionUnexpectedError if use case throws unexpected error", async () => {
-//     spyCreateTransactionUseCaseExecute.mockImplementationOnce(() => {
-//       throw new CreateTransactionUnexpectedError();
-//     });
+    await expect(createFarmService.execute(props)).rejects.toThrow(
+      InvalidFarmAreaSumError,
+    );
+  });
 
-//     const props: CreateTransactionRequest = {
-//       amount: 200.00,
-//       timestamp: "2023-01-01T00:00:00.000Z"
-//     };
+  it('should throw CreateFarmUnexpectedError if use case throws an error', async () => {
+    spyCreateFarmUseCaseExecute.mockImplementationOnce(() => {
+      throw new Error('Unexpected failure');
+    });
 
-//     await expect(createTransactionService.execute(props)).rejects.toThrow(CreateTransactionUnexpectedError);
-//   });
+    const props: IFarm = {
+      name: 'Fazenda Erro',
+      city: 'ErroCity',
+      state: 'EC',
+      totalArea: 100,
+      arableArea: 50,
+      vegetationArea: 50,
+      producerId: '123e4567-e89b-12d3-a456-426614174000',
+    };
 
-//   it("should throw InvalidFormatTimestampTransactionError if timestamp is not ISO 8601", async () => {
-//     const props: CreateTransactionRequest = {
-//       amount: 99.99,
-//       timestamp: "invalid-date-format",
-//     };
-
-//     spyCreateTransactionUseCaseExecute.mockImplementationOnce(() => {
-//       throw new InvalidFormatTimestampTransactionError();
-//     });
-
-//     await expect(createTransactionService.execute(props)).rejects.toThrow(InvalidFormatTimestampTransactionError);
-//   });
-
-//   it("should throw InvalidTimestampTransactionError if timestamp is in the future", async () => {
-//     const props: CreateTransactionRequest = {
-//       amount: 150.00,
-//       timestamp: new Date(Date.now() + 60000).toISOString(),
-//     };
-
-//     spyCreateTransactionUseCaseExecute.mockImplementationOnce(() => {
-//       throw new InvalidTimestampTransactionError();
-//     });
-
-//     await expect(createTransactionService.execute(props)).rejects.toThrow(InvalidTimestampTransactionError);
-//   });
-// });
+    await expect(createFarmService.execute(props)).rejects.toThrow(CreateFarmUnexpectedError);
+  });
+});

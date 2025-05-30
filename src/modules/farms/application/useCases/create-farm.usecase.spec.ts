@@ -1,67 +1,57 @@
-// import { TransactionRepository } from "../domain/repositories/transaction.repository";
-// import { CreateTransactionUseCase } from "./create-transactio-usecase";
-// import { Transaction } from "../domain/entities/transaction";
-// import { Test, TestingModule } from "@nestjs/testing";
-// import { CreateTransactionUnexpectedError } from "../errors/create-transaction-unexpected-error";
-// import { transactionMock } from "./../../../../../test/factories/transaction.factory";
-// import { CreateTransactionRequest } from "../interfaces/transaction.interface";
+import { Test, TestingModule } from '@nestjs/testing';
+import { CreateFarmUseCase } from './create-farm-usecase';
+import { FarmRepository } from '../../domain/repositories/farm.repository';
+import { CreateFarmUnexpectedError } from '../errors/create-farm-unexpected-error';
+import { IFarm } from '../../domain/interfaces/farm.interface';
+import { Farm } from '../../domain/entities/farm';
+import { farmMock } from '../../../../../test/factories/farm.mock';
 
-// const transactionMocked = transactionMock({});
+const farmMocked = farmMock();
 
-// let transactionRepository: TransactionRepository;
-// let createTransactionUseCase: CreateTransactionUseCase;
+let farmRepository: FarmRepository;
+let createFarmUseCase: CreateFarmUseCase;
 
-// let spyTransactionRespositoryCreate: jest.SpyInstance<Promise<void>, [Transaction: Transaction]>;
+let spyFarmRepositoryCreate: jest.SpyInstance<Promise<void>, [farm: Farm]>;
 
-// describe('CreateTransactionUseCase', () => {
-//   beforeEach(async () => {
-//     const transactionRepositoryMocked = {
-//       provide: TransactionRepository,
-//       useValue: {
-//         create: jest.fn(() => transactionMocked),
-//       },
-//     };
+describe('CreateFarmUseCase', () => {
+  beforeEach(async () => {
+    const farmRepositoryMocked = {
+      provide: FarmRepository,
+      useValue: {
+        create: jest.fn(() => Promise.resolve()),
+      },
+    };
 
-//     const module: TestingModule = await Test.createTestingModule({
-//       imports: [],
-//       controllers: [],
-//       providers: [transactionRepositoryMocked],
-//     }).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [CreateFarmUseCase, farmRepositoryMocked],
+    }).compile();
 
-//     transactionRepository = module.get<TransactionRepository>(TransactionRepository);
+    farmRepository = module.get<FarmRepository>(FarmRepository);
+    createFarmUseCase = new CreateFarmUseCase(farmRepository);
+    spyFarmRepositoryCreate = jest.spyOn(farmRepository, 'create');
+  });
 
-//     createTransactionUseCase = new CreateTransactionUseCase(transactionRepository);
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-//     spyTransactionRespositoryCreate = jest.spyOn(transactionRepository, 'create');
-//   });
+  it('should create a farm successfully', async () => {
+    const payload: IFarm = farmMocked;
 
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+    await expect(createFarmUseCase.execute(payload)).resolves.toBeUndefined();
 
-//   it('should create a transaction successfully', async () => {
-//     const payload: CreateTransactionRequest = {
-//       amount: 150.75,
-//       timestamp: new Date().toISOString(),
-//     };
+    expect(spyFarmRepositoryCreate).toHaveBeenCalledTimes(1);
+    expect(spyFarmRepositoryCreate).toHaveBeenCalledWith(expect.any(Farm));
+  });
 
-//     await createTransactionUseCase.execute(payload);
+  it('should throw CreateFarmUnexpectedError if repository.create throws error', async () => {
+    spyFarmRepositoryCreate.mockImplementationOnce(() => {
+      throw new CreateFarmUnexpectedError();
+    });
 
-//     expect(spyTransactionRespositoryCreate).toHaveBeenCalledTimes(1);
-//     expect(spyTransactionRespositoryCreate).toHaveBeenCalledWith(expect.any(Transaction));
-//   });
+    const payload: IFarm = farmMocked;
 
-//   it('should throw CreateTransactionUnexpectedError if repository.create fails', async () => {
-//     spyTransactionRespositoryCreate.mockImplementationOnce(() => {
-//       throw new CreateTransactionUnexpectedError();
-//     });
-
-//     const payload: CreateTransactionRequest = {
-//       amount: 100.00,
-//       timestamp: new Date().toISOString(),
-//     };
-
-//     await expect(createTransactionUseCase.execute(payload)).rejects.toThrow(CreateTransactionUnexpectedError);
-//     expect(spyTransactionRespositoryCreate).toHaveBeenCalledTimes(1);
-//   });
-// });
+    await expect(createFarmUseCase.execute(payload)).rejects.toThrow(CreateFarmUnexpectedError);
+    expect(spyFarmRepositoryCreate).toHaveBeenCalledTimes(1);
+  });
+});

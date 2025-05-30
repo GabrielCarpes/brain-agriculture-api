@@ -8,7 +8,9 @@ import {
   IsNumber,
   Min,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+
+import { transformIdentificationValue } from "@shared/transformers/transformIdentificationValue";
+import { Type, Transform } from 'class-transformer';
 
 class CreateCropDTO {
   @ApiProperty({ example: 'Soja' })
@@ -71,6 +73,7 @@ export class CreateProducerDTO {
   name!: string;
 
   @ApiProperty({ example: '12345678901' })
+  @Transform(transformIdentificationValue)
   @IsString()
   @IsNotEmpty()
   document!: string;

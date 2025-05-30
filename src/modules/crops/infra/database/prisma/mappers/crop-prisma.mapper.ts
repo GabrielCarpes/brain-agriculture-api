@@ -1,4 +1,4 @@
-import { Crop } from '@modules/crops/application/domain/entities/crops';
+import { Crop } from '@modules/crops/domain/entities/crops';
 import type { Crop as RawCrop, Farm as RawFarm } from '@prisma/client';
 
 export type RawCropWithRelations = RawCrop & {

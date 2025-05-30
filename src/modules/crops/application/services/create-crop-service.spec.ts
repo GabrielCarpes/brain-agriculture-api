@@ -1,97 +1,63 @@
-// import { Producer } from "../entities/producer.entity";
-// import { CreateProducerService } from "./create-transaction.service";
+import { Test, TestingModule } from '@nestjs/testing';
+import { CreateCropService } from './create-crop.service';
+import { CreateCropUseCase } from '../useCases/create-crop-usecase';
+import { CreateCropUnexpectedError } from '../errors/create-crop-unexpected-error';
+import { MissingCultureOrHarvestError } from '../errors/missing-culture-or-harvest-error';
+import { ICrop } from '../../domain/interfaces/crop.interface';
+import { cropMock } from '../../../../../test/factories/crop.mock';
 
-// const producerMocked = producerMock({});
+let createCropService: CreateCropService;
+let spyCreateCropUseCaseExecute: jest.SpyInstance<Promise<void>, [crop: any]>;
 
-// let createProducerService: CreateProducerService;
+describe('CreateCropService', () => {
+  beforeEach(async () => {
+    const createCropUseCaseMocked = {
+      provide: CreateCropUseCase,
+      useValue: {
+        execute: jest.fn(() => Promise.resolve()),
+      },
+    };
 
-// let spyCreateProducerUseCaseExecute: jest.SpyInstance<
-//   Promise<void>,
-//   [payload: Producer]
-// >;
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [CreateCropService, createCropUseCaseMocked],
+    }).compile();
 
-// describe('CreateProducerService', () => {
-//   beforeEach(async () => {
-//     const createProducerUseCaseMocked = {
-//       provide: CreateProducerUseCase,
-//       useValue: {
-//         execute: jest.fn(() => producerMocked),
-//       },
-//     };
+    const createCropUseCase = module.get<CreateCropUseCase>(CreateCropUseCase);
+    createCropService = new CreateCropService(createCropUseCase);
+    spyCreateCropUseCaseExecute = jest.spyOn(createCropUseCase, 'execute');
+  });
 
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [createProducerUseCaseMocked],
-//     }).compile();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-//     const createProducerUseCase =
-//       module.get<CreateProducerUseCase>(CreateProducerUseCase);
+  it('should create a crop successfully', async () => {
+    const payload: ICrop = cropMock();
 
-//     createProducerService = new CreateProducerService(createProducerUseCase);
+    await expect(createCropService.execute(payload)).resolves.toBeUndefined();
+    expect(spyCreateCropUseCaseExecute).toHaveBeenCalledTimes(1);
+    expect(spyCreateCropUseCaseExecute).toHaveBeenCalledWith(expect.anything());
+  });
 
-//     spyCreateProducerUseCaseExecute = jest.spyOn(
-//       createProducerUseCase,
-//       'execute',
-//     );
-//   });
+  it('should throw MissingCultureOrHarvestError if culture or harvest is missing', async () => {
+    const payload: ICrop = {
+      culture: '',
+      harvest: '',
+      farmId: 'fake-farm-id',
+    };
 
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+    await expect(createCropService.execute(payload)).rejects.toThrow(MissingCultureOrHarvestError);
+    expect(spyCreateCropUseCaseExecute).not.toHaveBeenCalled();
+  });
 
-//   it('should create a producer successfully', async () => {
-//     const props: CreateProducerRequest = {
-//       name: 'John Doe',
-//       document: '12345678901',
-//     };
+  it('should throw CreateCropUnexpectedError if use case throws unexpected error', async () => {
+    spyCreateCropUseCaseExecute.mockImplementationOnce(() => {
+      throw new CreateCropUnexpectedError();
+    });
 
-//     await expect(createProducerService.execute(props)).resolves.toBeUndefined();
+    const payload: ICrop = cropMock();
 
-//     expect(spyCreateProducerUseCaseExecute).toHaveBeenCalledTimes(1);
-//     expect(spyCreateProducerUseCaseExecute).toHaveBeenCalledWith(props);
-//   });
-
-//   it('should throw CreateProducerUnexpectedError if use case throws unexpected error', async () => {
-//     spyCreateProducerUseCaseExecute.mockImplementationOnce(() => {
-//       throw new CreateProducerUnexpectedError();
-//     });
-
-//     const props: CreateProducerRequest = {
-//       name: 'Jane Doe',
-//       document: '12345678901',
-//     };
-
-//     await expect(createProducerService.execute(props)).rejects.toThrow(
-//       CreateProducerUnexpectedError,
-//     );
-//   });
-
-//   it('should throw InvalidDocumentFormatError if document is malformed', async () => {
-//     spyCreateProducerUseCaseExecute.mockImplementationOnce(() => {
-//       throw new InvalidDocumentFormatError();
-//     });
-
-//     const props: CreateProducerRequest = {
-//       name: 'Invalid Format',
-//       document: 'invalid_doc',
-//     };
-
-//     await expect(createProducerService.execute(props)).rejects.toThrow(
-//       InvalidDocumentFormatError,
-//     );
-//   });
-
-//   it('should throw DuplicateDocumentError if document already exists', async () => {
-//     spyCreateProducerUseCaseExecute.mockImplementationOnce(() => {
-//       throw new DuplicateDocumentError();
-//     });
-
-//     const props: CreateProducerRequest = {
-//       name: 'Existing Document',
-//       document: '12345678901',
-//     };
-
-//     await expect(createProducerService.execute(props)).rejects.toThrow(
-//       DuplicateDocumentError,
-//     );
-//   });
-// });
+    await expect(createCropService.execute(payload)).rejects.toThrow(CreateCropUnexpectedError);
+    expect(spyCreateCropUseCaseExecute).toHaveBeenCalledTimes(1);
+  });
+});

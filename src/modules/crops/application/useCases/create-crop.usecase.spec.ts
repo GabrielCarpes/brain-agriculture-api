@@ -1,67 +1,64 @@
-// import { TransactionRepository } from "../domain/repositories/transaction.repository";
-// import { CreateTransactionUseCase } from "./create-transactio-usecase";
-// import { Transaction } from "../domain/entities/transaction";
-// import { Test, TestingModule } from "@nestjs/testing";
-// import { CreateTransactionUnexpectedError } from "../errors/create-transaction-unexpected-error";
-// import { transactionMock } from "./../../../../../test/factories/transaction.factory";
-// import { CreateTransactionRequest } from "../interfaces/transaction.interface";
+import { Test, TestingModule } from '@nestjs/testing';
+import { CreateCropUseCase } from './create-crop-usecase';
+import { CropRepository } from '../../domain/repositories/crop.repository';
+import { Crop } from '../../domain/entities/crops';
+import { cropMock } from '../../../../../test/factories/crop.mock';
+import { CreateCropUnexpectedError } from '../errors/create-crop-unexpected-error';
+import { ICrop } from '../../domain/interfaces/crop.interface';
 
-// const transactionMocked = transactionMock({});
+let cropRepository: CropRepository;
+let createCropUseCase: CreateCropUseCase;
+let spyCropRepositoryCreate: jest.SpyInstance<Promise<void>, [crop: Crop]>;
 
-// let transactionRepository: TransactionRepository;
-// let createTransactionUseCase: CreateTransactionUseCase;
+describe('CreateCropUseCase', () => {
+  beforeEach(async () => {
+    const cropRepositoryMocked = {
+      provide: CropRepository,
+      useValue: {
+        create: jest.fn(() => Promise.resolve()),
+      },
+    };
 
-// let spyTransactionRespositoryCreate: jest.SpyInstance<Promise<void>, [Transaction: Transaction]>;
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [CreateCropUseCase, cropRepositoryMocked],
+    }).compile();
 
-// describe('CreateTransactionUseCase', () => {
-//   beforeEach(async () => {
-//     const transactionRepositoryMocked = {
-//       provide: TransactionRepository,
-//       useValue: {
-//         create: jest.fn(() => transactionMocked),
-//       },
-//     };
+    cropRepository = module.get<CropRepository>(CropRepository);
+    createCropUseCase = new CreateCropUseCase(cropRepository);
+    spyCropRepositoryCreate = jest.spyOn(cropRepository, 'create');
+  });
 
-//     const module: TestingModule = await Test.createTestingModule({
-//       imports: [],
-//       controllers: [],
-//       providers: [transactionRepositoryMocked],
-//     }).compile();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-//     transactionRepository = module.get<TransactionRepository>(TransactionRepository);
+  it('should create a crop successfully', async () => {
+    const crop = cropMock();
 
-//     createTransactionUseCase = new CreateTransactionUseCase(transactionRepository);
+    await expect(createCropUseCase.execute(crop)).resolves.toBeUndefined();
 
-//     spyTransactionRespositoryCreate = jest.spyOn(transactionRepository, 'create');
-//   });
+    expect(spyCropRepositoryCreate).toHaveBeenCalledTimes(1);
+    expect(spyCropRepositoryCreate).toHaveBeenCalledWith(expect.any(Crop));
+  });
 
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+  it('should throw if repository create throws', async () => {
+    spyCropRepositoryCreate.mockImplementationOnce(() => {
+      throw new Error('Unexpected');
+    });
 
-//   it('should create a transaction successfully', async () => {
-//     const payload: CreateTransactionRequest = {
-//       amount: 150.75,
-//       timestamp: new Date().toISOString(),
-//     };
+    const crop = cropMock();
 
-//     await createTransactionUseCase.execute(payload);
+    await expect(createCropUseCase.execute(crop)).rejects.toThrow(Error);
+  });
 
-//     expect(spyTransactionRespositoryCreate).toHaveBeenCalledTimes(1);
-//     expect(spyTransactionRespositoryCreate).toHaveBeenCalledWith(expect.any(Transaction));
-//   });
+  it('should throw CreateCropUnexpectedError if use case throws unexpected error', async () => {
+    spyCropRepositoryCreate.mockImplementationOnce(() => {
+      throw new CreateCropUnexpectedError();
+    });
 
-//   it('should throw CreateTransactionUnexpectedError if repository.create fails', async () => {
-//     spyTransactionRespositoryCreate.mockImplementationOnce(() => {
-//       throw new CreateTransactionUnexpectedError();
-//     });
+    const payload = cropMock();
 
-//     const payload: CreateTransactionRequest = {
-//       amount: 100.00,
-//       timestamp: new Date().toISOString(),
-//     };
-
-//     await expect(createTransactionUseCase.execute(payload)).rejects.toThrow(CreateTransactionUnexpectedError);
-//     expect(spyTransactionRespositoryCreate).toHaveBeenCalledTimes(1);
-//   });
-// });
+    await expect(createCropUseCase.execute(payload)).rejects.toThrow(CreateCropUnexpectedError);
+    expect(spyCropRepositoryCreate).toHaveBeenCalledTimes(1);
+  });
+});

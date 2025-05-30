@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFarmUnexpectedError } from '../errors/create-farm-unexpected-error';
 import { InvalidFarmAreaSumError } from '../errors/invalid-farm-area-sum-error';
-import { IFarm } from '../domain/interfaces/farm.interface';
+import { IFarm } from '../../domain/interfaces/farm.interface';
 import { CreateFarmUseCase } from '../useCases/create-farm-usecase';
 import { validateFarmAreas } from '@shared/validators/validate-farms-area';
 
