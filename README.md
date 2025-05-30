@@ -82,6 +82,9 @@ Integração contínua com GitHub Actions.
 
 Rodando testes e lint a cada push.
 
+# Rodar Prisma Studio (visualizar db)
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/brain_agriculture_db" npx prisma studio
+
 ✅ Requisitos
 Node.js 18+
 
