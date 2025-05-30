@@ -10,17 +10,17 @@ export class CreateFarmService {
   constructor(private readonly createFarmUseCase: CreateFarmUseCase) {}
 
   async execute(payload: IFarm): Promise<void> {
-    try {
-      if (
-        validateFarmAreas(
-          payload.totalArea,
-          payload.arableArea,
-          payload.vegetationArea,
-        )
-      ) {
-        throw new InvalidFarmAreaSumError();
-      }
+    if (
+      validateFarmAreas(
+        payload.totalArea,
+        payload.arableArea,
+        payload.vegetationArea,
+      )
+    ) {
+      throw new InvalidFarmAreaSumError();
+    }
 
+    try {
       await this.createFarmUseCase.execute({ ...payload });
     } catch (error) {
       throw new CreateFarmUnexpectedError();

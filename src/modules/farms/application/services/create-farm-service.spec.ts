@@ -68,7 +68,7 @@ describe('CreateFarmService', () => {
 
   it('should throw CreateFarmUnexpectedError if use case throws an error', async () => {
     spyCreateFarmUseCaseExecute.mockImplementationOnce(() => {
-      throw new Error('Unexpected failure');
+      throw new CreateFarmUnexpectedError();
     });
 
     const props: IFarm = {

@@ -68,7 +68,7 @@ describe('CreateProducerService', () => {
 
     const props: IProducer = {
       name: 'John Doe',
-      document: '12345678901',
+      document: '02927017050',
     };
 
     await expect(createProducerService.execute(props)).resolves.toBeUndefined();
@@ -98,7 +98,7 @@ describe('CreateProducerService', () => {
 
     const props: IProducer = {
       name: 'Existing Producer',
-      document: '12345678901',
+      document: '02927017050',
     };
 
     await expect(createProducerService.execute(props)).rejects.toThrow(
@@ -116,7 +116,7 @@ describe('CreateProducerService', () => {
 
     const props: IProducer = {
       name: 'Unexpected Error',
-      document: '12345678901',
+      document: '02927017050',
     };
 
     await expect(createProducerService.execute(props)).rejects.toThrow(

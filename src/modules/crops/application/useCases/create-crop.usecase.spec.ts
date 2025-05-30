@@ -4,7 +4,6 @@ import { CropRepository } from '../../domain/repositories/crop.repository';
 import { Crop } from '../../domain/entities/crops';
 import { cropMock } from '../../../../../test/factories/crop.mock';
 import { CreateCropUnexpectedError } from '../errors/create-crop-unexpected-error';
-import { ICrop } from '../../domain/interfaces/crop.interface';
 
 let cropRepository: CropRepository;
 let createCropUseCase: CreateCropUseCase;
