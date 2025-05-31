@@ -7,6 +7,7 @@ import { CropModule } from './modules/crops/crop.module';
 import { ProducerModule } from './modules/producers/producer.module';
 import { DatabaseModule } from '@shared/database/database.module';
 import { AppController } from '@infra/http/controllers/app.controller';
+import { SecurityModule } from '@shared/security/security.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AppController } from '@infra/http/controllers/app.controller';
       isGlobal: true,
     }),
     DatabaseModule,
+    SecurityModule,
     ProducerModule,
     FarmModule,
     CropModule

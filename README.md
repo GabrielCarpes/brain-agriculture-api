@@ -69,9 +69,6 @@ A API estará disponível em: http://localhost:3333
 # Instalar dependências
 yarn install
 
-# Rodar a aplicação localmente
-yarn start:dev
-
 # Build de produção
 yarn build
 

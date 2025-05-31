@@ -9,8 +9,10 @@ import { ProducerAlreadyExistsError } from '../errors/producer-already-exists-er
 
 @Injectable()
 export class CreateProducerService {
-  constructor(private readonly createProducerUseCase: CreateProducerUseCase,
-    private readonly getProducerByDocumentUseCase: GetProducerByDocumentUseCase) {}
+  constructor(
+    private readonly createProducerUseCase: CreateProducerUseCase,
+    private readonly getProducerByDocumentUseCase: GetProducerByDocumentUseCase
+  ) {}
 
   async execute({ name, document }: IProducer): Promise<void> {
     if (!isValidCPFOrCNPJ(document)) {
