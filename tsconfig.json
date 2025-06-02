@@ -8,7 +8,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "sourceMap": true,
-    "incremental": true,
+    "incremental": false,
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": "./src",
