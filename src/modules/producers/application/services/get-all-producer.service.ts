@@ -4,15 +4,12 @@ import { GetAllProducersUnexpectedError } from '../errors/get-all-producer-unexp
 
 @Injectable()
 export class GetAllProducersService {
-  constructor(
-    private readonly getAllUseCase: GetAllProducersUseCase
-  ) {}
+  constructor(private readonly getAllUseCase: GetAllProducersUseCase) {}
 
   async execute() {
-    try{  
+    try {
       return this.getAllUseCase.execute();
     } catch (error) {
-      console.log(error)
       throw new GetAllProducersUnexpectedError();
     }
   }
