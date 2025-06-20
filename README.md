@@ -56,7 +56,7 @@ Prisma migrations
 ▶️ Como rodar o projeto com Docker
 
 # Clone o projeto
-git clone https://github.com/seu-usuario/seu-repo.git
+git clone https://github.com/GabrielCarpes/brain-agriculture-api
 cd seu-repo
 
 # Copie as variáveis de exemplo
@@ -78,9 +78,6 @@ yarn test
 Integração contínua com GitHub Actions.
 
 Rodando testes e lint a cada push.
-
-# Rodar Prisma Studio (visualizar db)
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/brain_agriculture_db" npx prisma studio
 
 ✅ Requisitos
 Node.js 18+

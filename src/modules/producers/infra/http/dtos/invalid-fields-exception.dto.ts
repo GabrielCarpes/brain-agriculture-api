@@ -1,8 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { name } from '../../../../../../package.json';
 
-const error = `${name}/invalid_producer_fields_exception`;
+const error = `invalid_producer_fields_exception`;
 
 export class InvalidProducerFieldsException extends BadRequestException {
   @ApiProperty({

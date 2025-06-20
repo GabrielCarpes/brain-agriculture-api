@@ -4,6 +4,8 @@ import { z } from 'zod';
 const envSchema = z.object({
   API_PREFIX: z.string().min(1),
   API_PORT: z.coerce.number().default(3000),
+  NAME: z.coerce.string().default("0.0.1"),
+  VERSION: z.coerce.string().default("brain_agriculture_api"),
 });
 
 const _env = envSchema.safeParse(process.env);

@@ -1,6 +1,5 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { RedocModule } from 'nestjs-redoc';
-import { name, version } from '../../../package.json';
 
 export class Docs {
   public static async initialize(app: any): Promise<void> {
@@ -24,7 +23,7 @@ export class Docs {
         Também fornece um endpoint para verificação de status da aplicação (health check).
       `,
       )
-      .setVersion(version)
+      .setVersion('1.0')
       .addTag('Produtores', 'Endpoints relacionados aos produtores rurais.')
       .addTag(
         'Fazendas',

@@ -1,8 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { name } from '../../../../../../package.json';
 
-const cropError = `${name}/invalid_crop_fields_exception`;
+const cropError = `invalid_crop_fields_exception`;
 
 export class InvalidCropFieldsException extends BadRequestException {
   @ApiProperty({

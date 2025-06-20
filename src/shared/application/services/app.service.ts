@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { name, version } from './../../../../package.json';
+import { env } from '@shared/env';
 
 export interface AppServiceResponse {
   status: string;
@@ -12,8 +12,8 @@ export class AppService {
   getStatus(): AppServiceResponse {
     return {
       status: 'SERVER_IS_READY',
-      name,
-      version,
+      name: env.NAME,
+      version: env.VERSION,
     };
   }
 }

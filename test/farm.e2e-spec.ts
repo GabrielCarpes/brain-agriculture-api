@@ -25,22 +25,38 @@ describe('FarmController (e2e)', () => {
       .post('/producers')
       .send({ name: 'Fazendeiro Teste', document: '12345678900' })
       .expect(201);
-
+  
+    const farmPayload = {
+      name: 'Fazenda Boa Vista',
+      city: 'Cascavel',
+      state: 'PR',
+      totalArea: 100,
+      arableArea: 70,
+      vegetationArea: 30,
+      producerId: producerRes.body.id,
+    };
+  
     const response = await request(app.getHttpServer())
       .post('/farms')
-      .send({
-        name: 'Fazenda Boa Vista',
-        city: 'Cascavel',
-        state: 'PR',
-        totalArea: 100,
-        arableArea: 70,
-        vegetationArea: 30,
-        producerId: producerRes.body?.id || 'fake-id',
-      })
+      .send(farmPayload)
       .expect(201);
-
-    expect(response.body).toBeDefined();
+  
+    expect(response.body).toMatchObject({
+      id: expect.any(String),
+      name: farmPayload.name,
+      city: farmPayload.city,
+      state: farmPayload.state,
+      totalArea: farmPayload.totalArea,
+      arableArea: farmPayload.arableArea,
+      vegetationArea: farmPayload.vegetationArea,
+      producerId: farmPayload.producerId,
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+    });
+  
+    expect(new Date(response.body.createdAt)).toBeInstanceOf(Date);
   });
+  
 
   it('/farms (POST) - deve falhar ao enviar dados inválidos', async () => {
     const response = await request(app.getHttpServer())
@@ -55,7 +71,16 @@ describe('FarmController (e2e)', () => {
         producerId: '',
       })
       .expect(400);
-
-    expect(response.body.message).toBeDefined();
+  
+    expect(response.body).toHaveProperty('message');
+    expect(Array.isArray(response.body.message)).toBe(true);
+    expect(response.body.message).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('name'),
+        expect.stringContaining('totalArea'),
+        expect.stringContaining('producerId'),
+      ])
+    );
   });
+  
 });

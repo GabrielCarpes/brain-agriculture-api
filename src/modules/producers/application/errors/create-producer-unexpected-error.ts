@@ -1,9 +1,8 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { name } from '../../../../../package.json';
 
 const message = 'Unexpected error while creating producer';
-const error = `${name}/create_producer_unexpected_error`;
+const error = `create_producer_unexpected_error`;
 
 export class CreateProducerUnexpectedError extends InternalServerErrorException {
   @ApiProperty({ example: message })

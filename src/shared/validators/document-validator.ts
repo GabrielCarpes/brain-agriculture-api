@@ -1,5 +1,5 @@
-import { cpf, cnpj } from 'cpf-cnpj-validator';
+import { isCPF, isCNPJ } from 'brazilian-values';
 
 export function isValidCPFOrCNPJ(document: string): boolean {
-  return cpf.isValid(document) || cnpj.isValid(document);
+  return isCPF(document) || isCNPJ(document);
 }

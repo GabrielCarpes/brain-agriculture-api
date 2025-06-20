@@ -1,8 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { name } from '../../../../../../package.json';
 
-const farmError = `${name}/invalid_farm_fields_exception`;
+const farmError = `invalid_farm_fields_exception`;
 
 export class InvalidFarmFieldsException extends BadRequestException {
   @ApiProperty({

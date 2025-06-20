@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { name } from '../../../../../package.json';
-const error = `${name}/invalid_fields_exception`;
+
+const error = `invalid_fields_exception`;
 
 const message = ['amount é obrigatório', 'timestamp é obrigatório'];
 
