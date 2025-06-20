@@ -56,23 +56,29 @@ Prisma migrations
 ▶️ Como rodar o projeto com Docker
 
 # Clone o projeto
+
 git clone https://github.com/GabrielCarpes/brain-agriculture-api
 cd seu-repo
 
 # Copie as variáveis de exemplo
+
 cp .env.example .env
 
-# Suba os containers
-docker-compose up --build
-A API estará disponível em: http://localhost:3333
-
 # Instalar dependências
+
 yarn install
 
 # Build de produção
+
 yarn build
 
+# Suba os containers
+
+docker-compose up --build
+A API estará disponível em: http://localhost:3333
+
 # Rodar testes
+
 yarn test
 ⚙️ CI/CD
 Integração contínua com GitHub Actions.
